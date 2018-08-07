@@ -11,9 +11,10 @@ program
 program
   .command('fetch [register]')
   .description("start tracking a register and delete its data")
-  .action(function (register, cmd) {
+  .action(async function (register, cmd) {
+    console.log('hello')
     if(register === undefined) {
-        const code = commands.fetchAll()
+        const code = await commands.fetchAll()
         process.exit(code)
     } else {
         console.log('fetching one')
@@ -47,6 +48,7 @@ program.on('command:*', function () {
 
 program.parse(process.argv)
 
+/*
 if(!commandSet) {
     program.help()
-}
+}*/
