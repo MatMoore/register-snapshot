@@ -1,6 +1,7 @@
 const fetcher = require('./fetcher');
 const RegisterStatus = require('./manifest').RegisterStatus
-const nock = require('nock');
+const nock = require('nock')
+const RecordSet = require('./record_set').RecordSet
 
 const country_url = "https://country.register.gov.uk"
 const country = "country"
@@ -18,9 +19,11 @@ const westGermanyCitizenNames = "West German"
 const westGermanyEndDate = "1990-10-02"
 
 describe('fetch', () => {
-    const register = new RegisterStatus(country, country_url, "all", 0)
+    const register = () => new RegisterStatus(country, country_url, "all", 0)
 
     it('fetches JSON', async () => {
+        const recordSet = new RecordSet(register())
+
         const sovietUnion = {
             "end-date": sovietUnionEndDate,
             "country": sovietUnionKey,
@@ -35,10 +38,10 @@ describe('fetch', () => {
                 200,
                 [  
                     {  
-                       "index-entry-number":"1",
-                       "entry-number":"1",
-                       "entry-timestamp":"2016-10-21T16:11:20Z",
-                       "key":"BAS",
+                       "index-entry-number": "1",
+                       "entry-number": "1",
+                       "entry-timestamp": "2016-10-21T16:11:20Z",
+                       "key": sovietUnionKey,
                        "item-hash":[  
                           sovietUnionItemHash
                        ]
@@ -53,44 +56,13 @@ describe('fetch', () => {
                 sovietUnion
             )
 
-        const response = await fetcher.fetchJSON(register)
-        expect(response).toEqual(JSON.stringify([sovietUnion], null, 2))
-    })
-
-
-    it('fetches csv', async () => {
-        const sovietUnion = "country,name,official-name,citizen-names,start-date,end-date\n" +
-            [sovietUnionKey, sovietUnionName, sovietUnionOfficialName, sovietUnionCitizenNames, '', sovietUnionEndDate].join(',')
-
-        nock(country_url)
-            .get('/entries.json/?start=0')
-            .reply(
-                200,
-                [  
-                    {  
-                       "index-entry-number":"1",
-                       "entry-number":"1",
-                       "entry-timestamp":"2016-10-21T16:11:20Z",
-                       "key":"BAS",
-                       "item-hash":[  
-                          sovietUnionItemHash
-                       ]
-                    }
-                ]
-            )
-
-        nock(country_url)
-            .get('/items/' + sovietUnionItemHash + '.csv')
-            .reply(
-                200,
-                sovietUnion
-            )
-
-        const response = await fetcher.fetchCSV(register)
-        expect(response).toEqual(sovietUnion)
+        await fetcher.fetchJSON(recordSet)
+        expect(recordSet.json).toEqual(JSON.stringify({SU: sovietUnion}, null, 2))
     })
 
     it('paginates to the latest entry', async () => {
+        const recordSet = new RecordSet(register())
+
         const sovietUnion = {
             "end-date": sovietUnionEndDate,
             "country": sovietUnionKey,
@@ -157,12 +129,21 @@ describe('fetch', () => {
                 westGermany
             )
 
-        const response = await fetcher.fetchJSON(register)
-        expect(response).toEqual(JSON.stringify([sovietUnion, westGermany], null, 2))
+        await fetcher.fetchJSON(recordSet)
+        expect(recordSet.json).toEqual(JSON.stringify({SU: sovietUnion, DE: westGermany}, null, 2))
     })
 
-    it('raises an error if the fetch failed', function() {
-        
+    it('raises an error if the fetch failed', async () => {
+        const recordSet = new RecordSet(register())
+
+        nock(country_url)
+            .get('/entries.json/?start=0')
+            .reply(500, {})
+
+        expect.assertions(1);
+        await expect(fetcher.fetchJSON(recordSet)).rejects.toEqual(
+            new Error("Unable to fetch entries: Internal Server Error")
+        );
     })
 
     it('tells you the latest entry number', function() {

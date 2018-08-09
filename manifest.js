@@ -41,6 +41,11 @@ class RegisterStatus {
     this.name = name
     this.url = url
     this.status = status
+
+    // This is the entry number of the next entry to fetch
+    if(entry === undefined) {
+      entry = 0
+    }
     this.entry = entry
   }
 
