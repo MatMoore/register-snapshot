@@ -1,15 +1,11 @@
 var exports = module.exports = {};
 
 class RecordSet {
-    constructor(registerStatus) {
+    constructor() {
         this.records = {}
-        this.registerStatus = registerStatus
     }
 
     addEntry(entryNumber, key, item) {
-        if(entryNumber < this.registerStatus.entry) {
-            throw new Exception('Entries must be processed in order')
-        }
         this.records[key] = item
     }
 
@@ -25,6 +21,10 @@ class RecordSet {
 
     get json() {
         return JSON.stringify(this.records, null, 2)
+    }
+
+    populateFromJSON(jsonString) {
+        this.records = JSON.parse(jsonString)
     }
 
     get csvValues() {

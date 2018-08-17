@@ -34,14 +34,14 @@ The tool does not currently list the available registers. You can view a list at
 
 To get the name of the register, click on it and take the last part of the URL.
 
-For example, the register at 
+For example, the register at
 https://www.registers.service.gov.uk/registers/approved-open-standard is named `approved-open-standard`.
 
 ### Filtering records
 For registers with `start-date` and/or `end-date` fields, records can be in one of three states:
 
 - `archived`: `end-date` is in the past
-- `pending`: `start-date` is in the future 
+- `pending`: `start-date` is in the future
 - `current`: the record is not archived or pending
 
 You can choose which records to download by setting the `status` flag to one of these values when downloading a register. Set `--status all` if you want to include everything.
@@ -61,14 +61,18 @@ You should version control this file, but don't try to edit it by hand.
 
 ### Command reference
 
-#### `register-download [--csv] [--status <STATUS>] <REGISTER NAME>`
+#### `register-download fetch <REGISTER URL>`
 
 Add a register to `registers.json` and download the latest records.
 If you've already downloaded a dataset, it will be updated to reflect the latest records.
 
-#### `register-download`
+#### `register-download fetch`
 
-Download the latest data for every register in `registers.json`
+Download the latest data for every register in `registers.json`.
+
+#### `register-download status`
+
+Check whether any registers in `registers.json` are out of date.
 
 #### `register-download remove <REGISTER NAME>`
 

@@ -1,5 +1,5 @@
 const fetcher = require('./fetcher');
-const RegisterStatus = require('./manifest').RegisterStatus
+const Register = require('./manifest').Register
 const nock = require('nock')
 const RecordSet = require('./record_set').RecordSet
 
@@ -19,10 +19,10 @@ const westGermanyCitizenNames = "West German"
 const westGermanyEndDate = "1990-10-02"
 
 describe('fetch', () => {
-    const register = () => new RegisterStatus(country, country_url, "all", 0)
+    const register = () => new Register(country, country_url, "all", 0)
 
     it('fetches JSON', async () => {
-        const recordSet = new RecordSet(register())
+        const r = register()
 
         const sovietUnion = {
             "end-date": sovietUnionEndDate,
@@ -56,12 +56,12 @@ describe('fetch', () => {
                 sovietUnion
             )
 
-        await fetcher.fetchJSON(recordSet)
-        expect(recordSet.json).toEqual(JSON.stringify({SU: sovietUnion}, null, 2))
+        await fetcher.fetchJSON(r)
+        expect(r.recordSet.json).toEqual(JSON.stringify({SU: sovietUnion}, null, 2))
     })
 
     it('paginates to the latest entry', async () => {
-        const recordSet = new RecordSet(register())
+        const r = register()
 
         const sovietUnion = {
             "end-date": sovietUnionEndDate,
@@ -129,26 +129,25 @@ describe('fetch', () => {
                 westGermany
             )
 
-        await fetcher.fetchJSON(recordSet)
-        expect(recordSet.json).toEqual(JSON.stringify({SU: sovietUnion, DE: westGermany}, null, 2))
+        await fetcher.fetchJSON(r)
+        expect(r.recordSet.json).toEqual(JSON.stringify({SU: sovietUnion, DE: westGermany}, null, 2))
     })
 
     it('raises an error if the fetch failed', async () => {
-        const recordSet = new RecordSet(register())
+        const r = register()
 
         nock(country_url)
             .get('/entries.json/?start=0')
             .reply(500, {})
 
         expect.assertions(1);
-        await expect(fetcher.fetchJSON(recordSet)).rejects.toEqual(
+        await expect(fetcher.fetchJSON(r)).rejects.toEqual(
             new Error("Unable to fetch entries: Internal Server Error")
         );
     })
 
     it('tells you the next entry number', async function() {
         const countryRegister = register()
-        const recordSet = new RecordSet(countryRegister)
 
         const sovietUnion = {
             "end-date": sovietUnionEndDate,
@@ -182,7 +181,7 @@ describe('fetch', () => {
                 sovietUnion
             )
 
-        await fetcher.fetchJSON(recordSet)
+        await fetcher.fetchJSON(countryRegister)
         expect(countryRegister.entry).toBe(2)
 
     })
@@ -271,30 +270,26 @@ describe('fetch', () => {
         })
 
         it('applies the archived filter', async function() {
-            const countryRegister = new RegisterStatus(country, country_url, "archived", 0)
-            const recordSet = new RecordSet(countryRegister)
-            await fetcher.fetchJSON(recordSet)
-            expect(recordSet.records).toEqual({SU: sovietUnion})
+            const countryRegister = new Register(country, country_url, "archived", 0)
+            await fetcher.fetchJSON(countryRegister)
+            expect(countryRegister.recordSet.records).toEqual({SU: sovietUnion})
         })
 
         it('applies the current filter', async function() {
-            const countryRegister = new RegisterStatus(country, country_url, "current", 0)
-            const recordSet = new RecordSet(countryRegister)
-            await fetcher.fetchJSON(recordSet)
-            expect(recordSet.records).toEqual({GB: uk})
+            const countryRegister = new Register(country, country_url, "current", 0)
+            await fetcher.fetchJSON(countryRegister)
+            expect(countryRegister.recordSet.records).toEqual({GB: uk})
         })
 
         it('applies the pending filter', async function() {
-            const countryRegister = new RegisterStatus(country, country_url, "pending", 0)
-            const recordSet = new RecordSet(countryRegister)
-            await fetcher.fetchJSON(recordSet)
-            expect(recordSet.records).toEqual({MM: republicOfMat})
+            const countryRegister = new Register(country, country_url, "pending", 0)
+            await fetcher.fetchJSON(countryRegister)
+            expect(countryRegister.recordSet.records).toEqual({MM: republicOfMat})
         })
 
         it('updates the entry number even if the item is filtered out', async function() {
-            const countryRegister = new RegisterStatus(country, country_url, "archived", 0)
-            const recordSet = new RecordSet(countryRegister)
-            await fetcher.fetchJSON(recordSet)
+            const countryRegister = new Register(country, country_url, "archived", 0)
+            await fetcher.fetchJSON(countryRegister)
             expect(countryRegister.entry).toBe(3)
         })
     })

@@ -25,7 +25,7 @@ async function getEntries(registerUrl, pagination) {
         }
 
         const links = parseLinkHeader(entriesResponse.headers.get("link"))
-        if(links !== null && links.next !== null) {
+        if(links !== null && links.next !== null && links.next !== undefined) {
             pagination = links.next.url
         } else {
             return entries;
@@ -36,7 +36,9 @@ async function getEntries(registerUrl, pagination) {
 async function getItemJSON(registerUrl, itemHash) {
     let itemResponse
     try {
+        //console.time(`fetch-${registerUrl}-${itemHash}`)
         itemResponse = await fetch(registerUrl + '/items/' + itemHash + '.json').then(raiseOnError)
+        //console.timeEnd(`fetch-${registerUrl}-${itemHash}`)
     } catch(e) {
         throw new Error("Unable to fetch item " + itemHash + ": " + e.message)
     }
@@ -85,24 +87,33 @@ class Filterer {
     }
 }
 
-async function fetchJSON(recordSet) {
-    const registerStatus = recordSet.registerStatus
-    const filterer = new Filterer(registerStatus.status)
-    const entries = await getEntries(registerStatus.url, "?start=" + registerStatus.entry)
+async function fetchJSON(register) {
+    const recordSet = register.recordSet
+    const filterer = new Filterer(register.status)
+    const entries = await getEntries(register.url, "?start=" + register.entry)
 
     for (const entry of entries) {
         const itemHash = entry['item-hash'][0]
         const key = entry.key
-        const item = await getItemJSON(registerStatus.url, itemHash)
+
+        // TODO: fetch items in parallel?
+        const item = await getItemJSON(register.url, itemHash)
         const entryNumber = parseInt(entry['entry-number'], 10)
 
         if(filterer.isIncluded(item)) {
             recordSet.addEntry(entryNumber, key, item)
         }
 
-        registerStatus.entry = entryNumber + 1
-
+        register.entry = entryNumber
     }
 }
 
+async function fetchTotalEntries(register) {
+    const endpoint = register.url + '/register.json'
+    const response = await fetch(endpoint).then(raiseOnError)
+    const result = await response.json()
+    return parseInt(result['total-entries'], 10)
+}
+
 exports.fetchJSON = fetchJSON
+exports.fetchTotalEntries = fetchTotalEntries

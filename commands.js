@@ -1,23 +1,31 @@
 var exports = module.exports = {};
-const loader = require('./manifest_loader')
+const Manifest = require('./manifest').Manifest
+const fetcher = require('./fetcher')
 
-exports.fetchAll = async function() {
-    const manifest = loader.load()
-    if(manifest === null) {
-        return 1
-    }
+// TODO test stdout
+
+exports.fetchAll = async () => {
+    const manifest = Manifest.load()
 
     for (const register of Object.values(manifest.registers)) {
-        console.log('Fetching ' + register.name + ' (' + register.status + ')')
+        register.load()
+
+        const originalEntry = register.entry
+
+        await fetcher.fetchJSON(register)
+
+        if(register.entry !== originalEntry) {
+            console.log(`Updated ${register.name} from ${originalEntry} -> ${register.entry}.`)
+        } else {
+            console.log(`${register.name} is up to date.`)
+        }
+
+        register.save()
     }
 
-    const manifest2 = require('./manifest')
-    const countries = new manifest2.RegisterStatus('country', 'https://country.register.gov.uk', 'all', 0)
-    const fetcher = require('./fetcher')
-    await fetcher.fetchCSV(countries).then(data => {console.log(data)})
+    manifest.save()
 
-    loader.save(manifest)
-    console.log('Use "register-sync fetch <register>" to start tracking a new register.')
+    console.log('Use "register-sync fetch <register URL>" to start tracking a new register.')
 
     if(Object.keys(manifest.registers).length == 0) {
         return 1
@@ -26,14 +34,59 @@ exports.fetchAll = async function() {
     }
 }
 
-exports.fetchRegister = function(register) {
+exports.fetchRegister = async (url, status) => {
+    if(!RegExp('^all|archived|current|pending$').test(status)) {
+        throw new Error(`Invalid status '${status}'`)
+    }
+
+    if(!RegExp('^https://').test(url)) {
+        throw new Error(`Invalid HTTPS URL '${url}'`)
+    }
+
+    const manifest = Manifest.load()
+    const name = new URL(url).hostname.split('.')[0]
+    const register = manifest.setRegister(name, url, status)
+
+    register.load()
+
+    console.log('Fetching ' + name + ' (' + status + ')')
+    await fetcher.fetchJSON(register)
+
+    register.save()
+
+    console.log(`Saved to data/${name}_${status}.json`)
+    console.log(`Use "register-download rm ${name}" to stop tracking this register and delete its data.`)
+
+    manifest.save()
+}
+
+exports.rm = async (register) => {
 
 }
 
-exports.rm = function(register) {
+exports.status = async () => {
+    const manifest = Manifest.load()
 
-}
+    let ok = true
 
-exports.status = function() {
+    for (const register of Object.values(manifest.registers)) {
+        const totalEntriesLocal = register.entry
+        const totalEntriesRemote = await fetcher.fetchTotalEntries(register)
 
+        if(totalEntriesLocal < totalEntriesRemote) {
+            console.log(`${register.name} is out of date. You have ${totalEntriesLocal} entries, but there are ${totalEntriesRemote - totalEntriesLocal} new entries.`)
+            ok = false
+        } else if (totalEntriesLocal > totalEntriesRemote) {
+            console.log(`Local copy of ${register.name} has entries that no longer exist. You have ${totalEntriesLocal} entries, but the register has ${totalEntriesRemote} entries.`)
+            ok = false
+        } else {
+            console.log(`${register.name} is up to date.`)
+        }
+    }
+
+    if(ok) {
+        return 0
+    } else {
+        return 1
+    }
 }
