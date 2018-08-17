@@ -52,7 +52,7 @@ async function fetchJSON(recordSet) {
         const itemHash = entry['item-hash'][0]
         const key = entry.key
         const item = await getItemJSON(registerStatus.url, itemHash)
-        recordSet.addEntry(entry['entry-number'], key, item)
+        recordSet.addEntry(parseInt(entry['entry-number'], 10), key, item)
     }
 }
 

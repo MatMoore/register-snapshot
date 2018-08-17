@@ -10,7 +10,7 @@ class RecordSet {
         if(entryNumber < this.registerStatus.entry) {
             throw new Exception('Entries must be processed in order')
         }
-        this.registerStatus.entry = entryNumber
+        this.registerStatus.entry = entryNumber + 1
         this.records[key] = item
     }
 

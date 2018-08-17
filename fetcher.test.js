@@ -146,7 +146,44 @@ describe('fetch', () => {
         );
     })
 
-    it('tells you the latest entry number', function() {
+    it('tells you the latest entry number', async function() {
+        const countryRegister = register()
+        const recordSet = new RecordSet(countryRegister)
+
+        const sovietUnion = {
+            "end-date": sovietUnionEndDate,
+            "country": sovietUnionKey,
+            "official-name": sovietUnionOfficialName,
+            "name": sovietUnionName,
+            "citizen-names": sovietUnionCitizenNames
+        }
+
+        nock(country_url)
+            .get('/entries.json/?start=0')
+            .reply(
+                200,
+                [  
+                    {  
+                       "index-entry-number": "1",
+                       "entry-number": "0",
+                       "entry-timestamp": "2016-10-21T16:11:20Z",
+                       "key": sovietUnionKey,
+                       "item-hash":[  
+                          sovietUnionItemHash
+                       ]
+                    }
+                ]
+            )
+
+        nock(country_url)
+            .get('/items/' + sovietUnionItemHash + '.json')
+            .reply(
+                200,
+                sovietUnion
+            )
+
+        await fetcher.fetchJSON(recordSet)
+        expect(countryRegister.entry).toBe(1)
 
     })
 
