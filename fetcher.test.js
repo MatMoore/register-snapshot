@@ -36,13 +36,13 @@ describe('fetch', () => {
             .get('/entries.json/?start=0')
             .reply(
                 200,
-                [  
-                    {  
+                [
+                    {
                        "index-entry-number": "1",
                        "entry-number": "1",
                        "entry-timestamp": "2016-10-21T16:11:20Z",
                        "key": sovietUnionKey,
-                       "item-hash":[  
+                       "item-hash":[
                           sovietUnionItemHash
                        ]
                     }
@@ -83,13 +83,13 @@ describe('fetch', () => {
             .get('/entries.json/?start=0')
             .reply(
                 200,
-                [  
-                    {  
+                [
+                    {
                        "index-entry-number":"1",
                        "entry-number":"1",
                        "entry-timestamp":"2016-10-21T16:11:20Z",
                        "key": sovietUnionKey,
-                       "item-hash":[  
+                       "item-hash":[
                           sovietUnionItemHash
                        ]
                     }
@@ -101,13 +101,13 @@ describe('fetch', () => {
             .get('/entries.json/?start=1&limit=100')
             .reply(
                 200,
-                [  
-                    {  
+                [
+                    {
                        "index-entry-number":"2",
                        "entry-number":"2",
                        "entry-timestamp":"2016-10-21T16:11:20Z",
                        "key": westGermanyKey,
-                       "item-hash":[  
+                       "item-hash":[
                           westGermanyItemHash
                        ]
                     }
@@ -146,7 +146,7 @@ describe('fetch', () => {
         );
     })
 
-    it('tells you the latest entry number', async function() {
+    it('tells you the next entry number', async function() {
         const countryRegister = register()
         const recordSet = new RecordSet(countryRegister)
 
@@ -162,13 +162,13 @@ describe('fetch', () => {
             .get('/entries.json/?start=0')
             .reply(
                 200,
-                [  
-                    {  
+                [
+                    {
                        "index-entry-number": "1",
-                       "entry-number": "0",
+                       "entry-number": "1",
                        "entry-timestamp": "2016-10-21T16:11:20Z",
                        "key": sovietUnionKey,
-                       "item-hash":[  
+                       "item-hash":[
                           sovietUnionItemHash
                        ]
                     }
@@ -183,19 +183,119 @@ describe('fetch', () => {
             )
 
         await fetcher.fetchJSON(recordSet)
-        expect(countryRegister.entry).toBe(1)
+        expect(countryRegister.entry).toBe(2)
 
     })
 
-    it('warns if integrity of the register has been broken', function() {
+    describe('filtering by status', () => {
+        const sovietUnion = {
+            "end-date": sovietUnionEndDate,
+            "country": sovietUnionKey,
+            "official-name": sovietUnionOfficialName,
+            "name": sovietUnionName,
+            "citizen-names": sovietUnionCitizenNames
+        }
 
-    })
+        const republicOfMat = {
+            "start-date": "3000-01-01",
+            "country": "MM",
+            "official-name": "Republic of Mat",
+            "name": "Matland",
+            "citizen-names": "Mat"
+        }
 
-    it('fetches an incremental update', function() {
+        const uk = {
+            "country": "GB",
+            "official-name": "The United Kingdom of Great Britain and Northern Ireland",
+            "name": "United Kingdom",
+            "citizen-names": "Briton;British citizen"
+        }
 
-    })
+        beforeEach(() => {
+            nock(country_url)
+                .get('/entries.json/?start=0')
+                .reply(
+                    200,
+                    [
+                        {
+                           "index-entry-number": "0",
+                           "entry-number": "0",
+                           "entry-timestamp": "2016-10-21T16:11:20Z",
+                           "key": sovietUnionKey,
+                           "item-hash":[
+                              sovietUnionItemHash
+                           ]
+                        },
+                        {
+                            "index-entry-number": "1",
+                            "entry-number": "1",
+                            "entry-timestamp": "2016-10-21T16:11:20Z",
+                            "key": "GB",
+                            "item-hash":[
+                               "gbHash"
+                            ]
+                        },
+                        {
+                            "index-entry-number": "2",
+                            "entry-number": "2",
+                            "entry-timestamp": "2016-10-21T16:11:20Z",
+                            "key": "MM",
+                            "item-hash":[
+                               "mmHash"
+                            ]
+                        }
+                    ]
+                )
 
-    it('filters by status', function() {
+            nock(country_url)
+                .get('/items/' + sovietUnionItemHash + '.json')
+                .reply(
+                    200,
+                    sovietUnion
+                )
 
+            nock(country_url)
+                .get('/items/gbHash.json')
+                .reply(
+                    200,
+                    uk
+                )
+
+
+            nock(country_url)
+                .get('/items/mmHash.json')
+                .reply(
+                    200,
+                    republicOfMat
+                )
+        })
+
+        it('applies the archived filter', async function() {
+            const countryRegister = new RegisterStatus(country, country_url, "archived", 0)
+            const recordSet = new RecordSet(countryRegister)
+            await fetcher.fetchJSON(recordSet)
+            expect(recordSet.records).toEqual({SU: sovietUnion})
+        })
+
+        it('applies the current filter', async function() {
+            const countryRegister = new RegisterStatus(country, country_url, "current", 0)
+            const recordSet = new RecordSet(countryRegister)
+            await fetcher.fetchJSON(recordSet)
+            expect(recordSet.records).toEqual({GB: uk})
+        })
+
+        it('applies the pending filter', async function() {
+            const countryRegister = new RegisterStatus(country, country_url, "pending", 0)
+            const recordSet = new RecordSet(countryRegister)
+            await fetcher.fetchJSON(recordSet)
+            expect(recordSet.records).toEqual({MM: republicOfMat})
+        })
+
+        it('updates the entry number even if the item is filtered out', async function() {
+            const countryRegister = new RegisterStatus(country, country_url, "archived", 0)
+            const recordSet = new RecordSet(countryRegister)
+            await fetcher.fetchJSON(recordSet)
+            expect(countryRegister.entry).toBe(3)
+        })
     })
 })

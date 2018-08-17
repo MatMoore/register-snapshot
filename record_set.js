@@ -10,7 +10,6 @@ class RecordSet {
         if(entryNumber < this.registerStatus.entry) {
             throw new Exception('Entries must be processed in order')
         }
-        this.registerStatus.entry = entryNumber + 1
         this.records[key] = item
     }
 
@@ -33,7 +32,7 @@ class RecordSet {
         for (const [key, record] of Object.entries(this.records)) {
             records.push(key + "," + record)
         }
-    
+
         return records.join('\n')
     }
 }
