@@ -13,4 +13,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Status command to check for updates
 - Records can be filtered using the `--status` option
 
-[Unreleased]: https://github.com/matmoore/register-download/compare/508d7675d6dbe23f34c8247152bb350c3c980921...HEAD
+[Unreleased]: https://github.com/matmoore/register-snapshot/compare/508d7675d6dbe23f34c8247152bb350c3c980921...HEAD

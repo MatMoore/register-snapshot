@@ -55,7 +55,7 @@ exports.fetchRegister = async (url, status) => {
     register.save()
 
     console.log(`Saved to data/${name}_${status}.json`)
-    console.log(`Use "register-download remove ${name}" if you want to stop tracking this register and delete its data.`)
+    console.log(`Use "register-snapshot remove ${name}" if you want to stop tracking this register and delete its data.`)
 
     manifest.save()
 }

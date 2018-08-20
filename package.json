@@ -1,10 +1,10 @@
 {
-  "name": "register-download",
+  "name": "register-snapshot",
   "version": "0.0.1",
   "description": "Unofficial tool to manage snapshots of GOV.UK registers",
   "main": "commands.js",
   "bin": {
-    "register-download": "index.js"
+    "register-snapshot": "index.js"
   },
   "scripts": {
     "test": "jest"
@@ -22,9 +22,9 @@
   "author": "Mat Moore",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/matmoore/register-download/issues"
+    "url": "https://github.com/matmoore/register-snapshot/issues"
   },
-  "homepage": "https://github.com/matmoore/register-download",
+  "homepage": "https://github.com/matmoore/register-snapshot",
   "devDependencies": {
     "jest": "^23.4.1",
     "nock": "^9.4.4"

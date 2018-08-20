@@ -83,7 +83,7 @@ class Manifest {
       value = this.addRegister(name, url, status, 0)
     }
     if(value.status !== status) {
-      throw new Error(`You are trying to download ${status} records but you already have a copy with ${value.status} records. Try removing it first: register-download remove ${name}`)
+      throw new Error(`You are trying to download ${status} records but you already have a copy with ${value.status} records. Try removing it first: register-snapshot remove ${name}`)
     }
     return value
   }

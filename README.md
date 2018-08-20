@@ -1,9 +1,9 @@
-# register-download
+# register-snapshot
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Changelog](https://img.shields.io/badge/Changelog-unreleased-yellow.svg)](CHANGELOG.md)
-[![CircleCI](https://circleci.com/gh/MatMoore/register-download.svg?style=shield)](https://circleci.com/gh/MatMoore/register-download)
+[![CircleCI](https://circleci.com/gh/MatMoore/register-snapshot.svg?style=shield)](https://circleci.com/gh/MatMoore/register-snapshot)
 
-`register-download` is a tool that manages snapshots of GOV.UK registers.
+`register-snapshot` is a tool that manages snapshots of GOV.UK registers.
 
 This is a personal project, so it's not maintained by the Government Digital Service.
 
@@ -11,17 +11,17 @@ This is a personal project, so it's not maintained by the Government Digital Ser
 To download a register:
 
 ```
-register-download add https://country.register.gov.uk  # downloads to data/registers/country_current.json
+register-snapshot add https://country.register.gov.uk  # downloads to data/registers/country_current.json
 git add data/registers
 git commit -m 'added country register dataset'
 ```
 
 Replace `country` with the ID of the register you want to use.
 
-To update the data, run `register-download fetch`:
+To update the data, run `register-snapshot fetch`:
 
 ```
-register-download fetch
+register-snapshot fetch
 
 # inspect and test changes
 
@@ -36,7 +36,7 @@ This tool lets you download registers data without integrating with the API of e
 
 Although each register has a [/records endpoint](https://docs.registers.service.gov.uk/api_reference/get_records) that returns its current records, records will change over time, so if you're building on top of registers data you need a process to keep it up to date.
 
-With register-download you can monitor for new updates, and update the data at any time with one command.
+With register-snapshot you can monitor for new updates, and update the data at any time with one command.
 
 Non-current records are automatically filtered out by default.
 
@@ -60,7 +60,7 @@ For registers with `start-date` and/or `end-date` fields, records can be in one 
 
 You can choose which records to download by setting the `status` flag to one of these values when downloading a register. Set `--status all` if you want to include everything.
 
-⚠️ Note: `register-download` only fetches `current` records by default.
+⚠️ Note: `register-snapshot` only fetches `current` records by default.
 
 ## The `registers.json` file
 Metadata about the data you've downloaded is saved to `data/registers.json`, which is used to perform incremental updates.
@@ -74,19 +74,19 @@ Then you can use [git revert](https://git-scm.com/docs/git-revert) to roll back 
 
 ## Command reference
 
-#### `register-download add <REGISTER URL>`
+#### `register-snapshot add <REGISTER URL>`
 
 Add a register to `registers.json` and download the latest records.
 If you've already added that register, it will be updated to match the latest records.
 
-#### `register-download fetch`
+#### `register-snapshot fetch`
 
 Download the latest data for every register in `registers.json`.
 
-#### `register-download status`
+#### `register-snapshot status`
 
 Check whether any registers in `registers.json` are out of date. The exit code is non-zero if any of them can be updated.
 
-#### `register-download remove <REGISTER NAME>`
+#### `register-snapshot remove <REGISTER NAME>`
 
 Remove a register from `registers.json` and delete the downloaded data.
