@@ -1,11 +1,12 @@
 var exports = module.exports = {}
 const fs = require('fs')
 const RecordSet = require('./record_set').RecordSet
+const path = require('path')
 
-// TODO: support windows style paths
-// and intelligently work out the root of the project
-const manifestPath = 'data/registers.json'
-const manifestDir = 'data'
+// TODO: intelligently work out the root of the project
+const manifestPath = path.resolve('data', 'registers.json')
+const manifestDir = path.normalize('data')
+const dataDir = path.normalize('data')
 
 class Manifest {
   constructor() {
@@ -84,9 +85,6 @@ class Manifest {
     return {registers: result, version: "0.0.1"}
   }
 }
-
-// TODO: make this data/registers
-const dataDir = 'data'
 
 class Register {
   constructor(name, url, status, entry) {
