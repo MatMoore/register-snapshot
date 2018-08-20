@@ -1,10 +1,10 @@
 {
-  "name": "register-sync",
+  "name": "register-download",
   "version": "0.0.1",
-  "description": "Take local snapshots of GOV.UK registers in CSV or JSON format.",
+  "description": "Unofficial tool to manage snapshots of GOV.UK registers",
   "main": "commands.js",
   "bin": {
-    "register-download": "registers.js"
+    "register-download": "index.js"
   },
   "scripts": {
     "test": "jest"
@@ -24,7 +24,7 @@
   "bugs": {
     "url": "https://github.com/matmoore/register-sync/issues"
   },
-  "homepage": "https://github.com/matmoore/register-sync#readme",
+  "homepage": "https://github.com/matmoore/register-download",
   "devDependencies": {
     "jest": "^23.4.1",
     "nock": "^9.4.4"
