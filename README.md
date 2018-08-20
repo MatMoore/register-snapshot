@@ -1,4 +1,7 @@
 # register-download
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Changelog](https://img.shields.io/badge/changelog-unreleased-yellow.svg)](CHANGELOG.md)
+
 `register-download` is a tool that manages snapshots of GOV.UK registers.
 
 This is a personal project, so it's not maintained by the Government Digital Service.
