@@ -1,7 +1,7 @@
 # register-snapshot
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![NPM Version](http://img.shields.io/npm/v/register-snapshot.svg?style=flat)](https://www.npmjs.org/package/register-snapshot)
-[![Changelog](https://img.shields.io/badge/Changelog-unreleased-yellow.svg)](CHANGELOG.md)
+[![Changelog](https://img.shields.io/badge/Changelog-0.0.1-yellow.svg)](CHANGELOG.md)
 [![CircleCI](https://circleci.com/gh/MatMoore/register-snapshot.svg?style=shield)](https://circleci.com/gh/MatMoore/register-snapshot)
 
 
