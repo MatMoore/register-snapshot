@@ -11,14 +11,14 @@ const handleError = (err) => {
 program
   .version('0.0.1')
 
-  program
+program
   .command('fetch')
   .description("If a register URL is given, download its records. Otherwise, download the latest records for all tracked registers.")
   .action((cmd) => {
     commands.fetchAll().catch(handleError).then((code) => process.exit(code))
   })
 
-  program
+program
   .command('add <url>')
   .description("If a register URL is given, download its records. Otherwise, download the latest records for all tracked registers.")
   .option('--status [status]', 'records to include: current (default), archived, pending, or all', 'current')
