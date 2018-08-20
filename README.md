@@ -1,13 +1,17 @@
 # register-snapshot
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![NPM Version](http://img.shields.io/npm/v/register-snapshot.svg?style=flat)](https://www.npmjs.org/package/register-snapshot)
 [![Changelog](https://img.shields.io/badge/Changelog-unreleased-yellow.svg)](CHANGELOG.md)
 [![CircleCI](https://circleci.com/gh/MatMoore/register-snapshot.svg?style=shield)](https://circleci.com/gh/MatMoore/register-snapshot)
+
 
 `register-snapshot` is a tool that manages snapshots of GOV.UK registers.
 
 This is a personal project, so it's not maintained by the Government Digital Service.
 
 ## Quickstart
+Install with npm: `npm i register-snapshot`
+
 To download a register:
 
 ```
