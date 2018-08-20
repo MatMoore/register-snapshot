@@ -1,6 +1,7 @@
 # register-download
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Changelog](https://img.shields.io/badge/Changelog-unreleased-yellow.svg)](CHANGELOG.md)
+[![CircleCI](https://circleci.com/gh/MatMoore/register-download.svg?style=shield)](https://circleci.com/gh/MatMoore/register-download)
 
 `register-download` is a tool that manages snapshots of GOV.UK registers.
 
