@@ -1,27 +1,29 @@
 # register-download
 `register-download` is a tool that manages snapshots of GOV.UK registers.
 
-It downloads the register's records in JSON or CSV format, and you control when to update the data.
+It downloads registers and stores their records as JSON files.
 
-If you check the downloaded files into version control, you have an audit trail that shows the data your application was using at any point in time.
+You can update the data at any time, and monitor for new updates.
+
+If you check the downloaded files into version control, you then have an audit trail showing the data your application was using at any point in time.
 
 ⚠️️ Note: this is a personal project and is not maintained by the Government Digital Service.
 
 ## Usage
-To download a new dataset:
+To download a register:
 
 ```
-register-download fetch country  # downloads to data/registers/country.json
+register-download add https://country.register.gov.uk  # downloads to data/registers/country_current.json
 git add data/registers
 git commit -m 'added country register dataset'
 ```
 
-Replace `country` with the name of the register you want to use.
+Replace `country` with the ID of the register you want to use.
 
-You should periodically update the data by running `register-download` again:
+To update the data, run `register-download fetch`:
 
 ```
-register-download
+register-download fetch
 
 # inspect and test changes
 
@@ -29,13 +31,16 @@ git add data/registers
 git commit -m 'updated country dataset'
 ```
 
+You can download multiple registers and the fetch command will update them all.
+
 ### How to find a register
-The tool does not currently list the available registers. You can view a list at https://www.registers.service.gov.uk/registers.
+The tool can't list the available registers, but you can view a list at https://www.registers.service.gov.uk/registers/register.
 
-To get the name of the register, click on it and take the last part of the URL.
+The register ID is the first column.
 
-For example, the register at
-https://www.registers.service.gov.uk/registers/approved-open-standard is named `approved-open-standard`.
+Take that register ID and stick `.register.gov.uk` on the end of it to get the URL.
+
+For example, the URL for the `approved-open-standard` register is: https://approved-open-standard.register.gov.uk
 
 ### Filtering records
 For registers with `start-date` and/or `end-date` fields, records can be in one of three states:
@@ -46,25 +51,24 @@ For registers with `start-date` and/or `end-date` fields, records can be in one 
 
 You can choose which records to download by setting the `status` flag to one of these values when downloading a register. Set `--status all` if you want to include everything.
 
-⚠️ Note: Unlike the official registers website, `register-download` only fetches `current` records by default.
+⚠️ Note: `register-download` only fetches `current` records by default.
 
 ### Reverting data to an earlier version
-
 The tool doesn't allow you to download older versions of a register, so you should use a version control tool (such as git) to track the history of the datasets you've downloaded.
 
 Then you can use [git revert](https://git-scm.com/docs/git-revert) to roll back to an earlier version of the data if you need to.
 
-### The registers.json file
+### The `registers.json` file
 Metadata about the data you've downloaded is saved to `data/registers.json`, which is used to perform incremental updates.
 
-You should version control this file, but don't try to edit it by hand.
+You should version control this file, but don't edit it by hand.
 
 ### Command reference
 
-#### `register-download fetch <REGISTER URL>`
+#### `register-download add <REGISTER URL>`
 
 Add a register to `registers.json` and download the latest records.
-If you've already downloaded a dataset, it will be updated to reflect the latest records.
+If you've already added that register, it will be updated to match the latest records.
 
 #### `register-download fetch`
 
@@ -72,7 +76,7 @@ Download the latest data for every register in `registers.json`.
 
 #### `register-download status`
 
-Check whether any registers in `registers.json` are out of date.
+Check whether any registers in `registers.json` are out of date. The exit code is non-zero if any of them can be updated.
 
 #### `register-download remove <REGISTER NAME>`
 
