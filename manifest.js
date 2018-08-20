@@ -3,10 +3,22 @@ const fs = require('fs')
 const RecordSet = require('./record_set').RecordSet
 const path = require('path')
 
-// TODO: intelligently work out the root of the project
-const manifestPath = path.resolve('data', 'registers.json')
-const manifestDir = path.normalize('data')
-const dataDir = path.normalize('data')
+const findDataDir = () => {
+  let directory = path.normalize('.')
+  const root = path.parse(directory).root || '/'
+
+  while(directory !== root) {
+    directory = path.resolve(directory, '..')
+    dataPath = path.resolve(directory, 'data')
+    manifestPath = path.resolve(dataPath, 'registers.json')
+
+    if(fs.existsSync(manifestPath)) {
+      return dataPath
+    }
+  }
+
+  return path.resolve('data')
+}
 
 class Manifest {
   constructor() {
@@ -14,6 +26,8 @@ class Manifest {
   }
 
   static load() {
+    const dataDir = findDataDir()
+    const manifestPath = path.resolve(dataDir, 'registers.json')
     if (fs.existsSync(manifestPath)) {
         try {
             const contents = fs.readFileSync(manifestPath)
@@ -28,12 +42,15 @@ class Manifest {
   }
 
   save() {
+    const dataDir = findDataDir()
+    const manifestPath = path.resolve(dataDir, 'registers.json')
+
     try {
         const serialized = this.serialize()
         const contents = JSON.stringify(serialized, null, 2)
 
-        if (!fs.existsSync(manifestDir)){
-            fs.mkdirSync(manifestDir);
+        if (!fs.existsSync(dataDir)){
+            fs.mkdirSync(dataDir);
         }
 
         fs.writeFileSync(manifestPath, contents)
@@ -44,22 +61,29 @@ class Manifest {
 
   addRegister(name, url, status, entry) {
     let register = new Register(name, url, status, entry)
-    this.registers[register.id] = register
+    this.registers[name] = register
     return register
   }
 
-  removeRegister(name, status) {
-    delete this.registers[Register.id(name, status)]
+  removeRegister(name) {
+    delete this.registers[name]
   }
 
-  register(name, status) {
-    return this.registers[Register.id(name, status)]
+  register(name) {
+    const result = this.registers[name]
+    if(result === undefined) {
+      return null
+    }
+    return result
   }
 
   setRegister(name, url, status) {
-    let value = this.register(name, status)
+    let value = this.register(name)
     if(value === null) {
       value = this.addRegister(name, url, status, 0)
+    }
+    if(value.status !== status) {
+      throw new Error(`You are trying to download ${status} records but you already have a copy with ${value.status} records. Try removing it first: register-download remove ${name}`)
     }
     return value
   }
@@ -112,22 +136,20 @@ class Register {
     return this.name + '_' + this.status + '.json'
   }
 
-  get filepath() {
-      // TODO: support windows style paths
-      return dataDir + '/' + this.filename
-  }
-
   load() {
     if(this.entry === 0) {
         return
     }
 
-    if (!fs.existsSync(this.filepath)) {
-        throw new Error(`Unable to load register file '${registerPath}, but there should be ${Register.entry} records.'`)
+    const dataDir = findDataDir()
+    const registerPath = path.resolve(dataDir, 'registers', this.filename)
+
+    if (!fs.existsSync(registerPath)) {
+        throw new Error(`Unable to load register file '${registerPath}, but there should be ${this.entry} records.'`)
     }
 
     try {
-        const contents = fs.readFileSync(this.filepath)
+        const contents = fs.readFileSync(registerPath)
         this.recordSet.populateFromJSON(contents)
     } catch (err) {
         throw new Error(`ERROR: unable to open file '${registerPath}': ` + err.stack)
@@ -136,17 +158,31 @@ class Register {
     return
   }
 
+  delete() {
+    const dataDir = findDataDir()
+    const registerPath = path.resolve(dataDir, 'registers', this.filename)
+    if (fs.existsSync(registerPath)) {
+      fs.unlinkSync(registerPath)
+    }
+  }
+
   save() {
     const contents = this.recordSet.json
+    const dataDir = findDataDir()
+    const registersDir = path.resolve(dataDir, 'registers')
+    const filePath = path.resolve(registersDir, this.filename)
 
     try {
         if (!fs.existsSync(dataDir)){
-            fs.mkdirSync(dataDir)
+          fs.mkdirSync(dataDir)
+        }
+        if (!fs.existsSync(registersDir)){
+            fs.mkdirSync(registersDir)
         }
 
-        fs.writeFileSync(this.filepath, contents)
+        fs.writeFileSync(filePath, contents)
     } catch (err) {
-        throw new Error(`ERROR: unable to save file '${this.filepath}': ` + err.stack)
+        throw new Error(`ERROR: unable to save file '${filePath}': ` + err.stack)
     }
   }
 

@@ -2,7 +2,7 @@ var exports = module.exports = {};
 const Manifest = require('./manifest').Manifest
 const fetcher = require('./fetcher')
 
-// TODO test stdout
+// TODO test this
 
 exports.fetchAll = async () => {
     const manifest = Manifest.load()
@@ -55,13 +55,22 @@ exports.fetchRegister = async (url, status) => {
     register.save()
 
     console.log(`Saved to data/${name}_${status}.json`)
-    console.log(`Use "register-download rm ${name}" to stop tracking this register and delete its data.`)
+    console.log(`Use "register-download remove ${name}" if you want to stop tracking this register and delete its data.`)
 
     manifest.save()
 }
 
-exports.rm = async (register) => {
+exports.rm = async (registerName) => {
+    const manifest = Manifest.load()
+    const register = manifest.register(registerName)
+    if(register === null) {
+        throw new Error(`Register ${registerName} not found. Doing nothing.`)
+    }
+    register.delete()
 
+    console.log(`Deleting ${registerName}`)
+    manifest.removeRegister(registerName, 'all')
+    manifest.save()
 }
 
 exports.status = async () => {

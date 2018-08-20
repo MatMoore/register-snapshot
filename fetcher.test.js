@@ -182,7 +182,7 @@ describe('fetch', () => {
             )
 
         await fetcher.fetchJSON(countryRegister)
-        expect(countryRegister.entry).toBe(2)
+        expect(countryRegister.entry).toBe(1)
 
     })
 
@@ -290,7 +290,7 @@ describe('fetch', () => {
         it('updates the entry number even if the item is filtered out', async function() {
             const countryRegister = new Register(country, country_url, "archived", 0)
             await fetcher.fetchJSON(countryRegister)
-            expect(countryRegister.entry).toBe(3)
+            expect(countryRegister.entry).toBe(2)
         })
     })
 })
