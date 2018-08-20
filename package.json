@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matmoore/register-sync.git"
+    "url": "git+https://github.com/matmoore/register-snapshot.git"
   },
   "keywords": [
     "registers",

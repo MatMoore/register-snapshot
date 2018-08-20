@@ -25,7 +25,7 @@ exports.fetchAll = async () => {
 
     manifest.save()
 
-    console.log('Use "register-sync fetch <register URL>" to start tracking a new register.')
+    console.log('Use "register-snapshot fetch <register URL>" to start tracking a new register.')
 
     if(Object.keys(manifest.registers).length == 0) {
         return 1
