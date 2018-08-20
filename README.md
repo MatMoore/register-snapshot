@@ -1,15 +1,9 @@
 # register-download
 `register-download` is a tool that manages snapshots of GOV.UK registers.
 
-It downloads registers and stores their records as JSON files.
+This is a personal project, so it's not maintained by the Government Digital Service.
 
-You can update the data at any time, and monitor for new updates.
-
-If you check the downloaded files into version control, you then have an audit trail showing the data your application was using at any point in time.
-
-⚠️️ Note: this is a personal project and is not maintained by the Government Digital Service.
-
-## Usage
+## Quickstart
 To download a register:
 
 ```
@@ -33,7 +27,18 @@ git commit -m 'updated country dataset'
 
 You can download multiple registers and the fetch command will update them all.
 
-### How to find a register
+## But why?
+This tool lets you download and update registers data without integrating with the API of each register.
+
+Although each register has a [/records endpoint](https://docs.registers.service.gov.uk/api_reference/get_records) that returns its current records, records will change over time, so if you're building on top of registers data you need a process to keep it up to date.
+
+With register-download you can monitor for new updates, and update the data at any time with one command.
+
+Non-current records are automatically filtered out by default.
+
+If you also check the downloaded files into version control, you get an audit trail showing the data your application was using at any point in time.
+
+## How to find a register
 The tool can't list the available registers, but you can view a list at https://www.registers.service.gov.uk/registers/register.
 
 The register ID is the first column.
@@ -42,7 +47,7 @@ Take that register ID and stick `.register.gov.uk` on the end of it to get the U
 
 For example, the URL for the `approved-open-standard` register is: https://approved-open-standard.register.gov.uk
 
-### Filtering records
+## Filtering records
 For registers with `start-date` and/or `end-date` fields, records can be in one of three states:
 
 - `archived`: `end-date` is in the past
@@ -53,17 +58,17 @@ You can choose which records to download by setting the `status` flag to one of 
 
 ⚠️ Note: `register-download` only fetches `current` records by default.
 
-### Reverting data to an earlier version
-The tool doesn't allow you to download older versions of a register, so you should use a version control tool (such as git) to track the history of the datasets you've downloaded.
-
-Then you can use [git revert](https://git-scm.com/docs/git-revert) to roll back to an earlier version of the data if you need to.
-
-### The `registers.json` file
+## The `registers.json` file
 Metadata about the data you've downloaded is saved to `data/registers.json`, which is used to perform incremental updates.
 
 You should version control this file, but don't edit it by hand.
 
-### Command reference
+## Reverting data to an earlier version
+The tool doesn't allow you to download older versions of a register, so you should use a version control tool (such as git) to track the history of the datasets you've downloaded.
+
+Then you can use [git revert](https://git-scm.com/docs/git-revert) to roll back to an earlier version of the data if you need to.
+
+## Command reference
 
 #### `register-download add <REGISTER URL>`
 
