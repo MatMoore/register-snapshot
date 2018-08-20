@@ -32,7 +32,7 @@ git commit -m 'updated country dataset'
 You can download multiple registers and the fetch command will update them all.
 
 ## But why?
-This tool lets you download and update registers data without integrating with the API of each register.
+This tool lets you download registers data without integrating with the API of each register.
 
 Although each register has a [/records endpoint](https://docs.registers.service.gov.uk/api_reference/get_records) that returns its current records, records will change over time, so if you're building on top of registers data you need a process to keep it up to date.
 
