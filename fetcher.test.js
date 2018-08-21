@@ -57,7 +57,7 @@ describe('fetch', () => {
             )
 
         await fetcher.fetchJSON(r)
-        expect(r.recordSet.json).toEqual(JSON.stringify({SU: sovietUnion}, null, 2))
+        expect(r.recordSet.json).toEqual(JSON.stringify({SU: sovietUnion}, null, 2) + "\n")
     })
 
     it('paginates to the latest entry', async () => {
@@ -130,7 +130,7 @@ describe('fetch', () => {
             )
 
         await fetcher.fetchJSON(r)
-        expect(r.recordSet.json).toEqual(JSON.stringify({SU: sovietUnion, DE: westGermany}, null, 2))
+        expect(r.recordSet.json).toEqual(JSON.stringify({SU: sovietUnion, DE: westGermany}, null, 2) + "\n")
     })
 
     it('raises an error if the fetch failed', async () => {
