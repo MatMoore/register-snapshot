@@ -1,6 +1,6 @@
 {
   "name": "register-snapshot",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Unofficial tool to manage snapshots of GOV.UK registers",
   "main": "commands.js",
   "bin": {
