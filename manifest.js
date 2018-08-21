@@ -47,7 +47,7 @@ class Manifest {
 
     try {
         const serialized = this.serialize()
-        const contents = JSON.stringify(serialized, null, 2)
+        const contents = JSON.stringify(serialized, null, 2) + "\n"
 
         if (!fs.existsSync(dataDir)){
             fs.mkdirSync(dataDir);

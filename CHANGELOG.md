@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## 0.0.2 (2018-08-21)
 - Minor text changes
+- Add final newline to the end of generated JSON files
 
 ## 0.0.1 (2018-08-20)
 

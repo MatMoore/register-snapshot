@@ -20,7 +20,7 @@ class RecordSet {
     }
 
     get json() {
-        return JSON.stringify(this.records, null, 2)
+        return JSON.stringify(this.records, null, 2) + "\n"
     }
 
     populateFromJSON(jsonString) {
