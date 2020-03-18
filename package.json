@@ -27,7 +27,7 @@
   "homepage": "https://github.com/matmoore/register-snapshot",
   "devDependencies": {
     "jest": "^23.4.1",
-    "nock": "^9.4.4"
+    "nock": "^12.0.3"
   },
   "dependencies": {
     "commander": "^2.16.0",
