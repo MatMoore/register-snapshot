@@ -30,7 +30,7 @@
     "nock": "^9.4.4"
   },
   "dependencies": {
-    "commander": "^2.16.0",
+    "commander": "^6.1.0",
     "node-fetch": "^2.2.0",
     "parse-link-header": "^1.0.1"
   }
